@@ -1,0 +1,7 @@
+# Copy to du_config.py and update the vars:
+
+transmission_opts = ['-n', 'user:password']
+re_movie_exts = '\.(avi|mp4|mkv|flv)$'
+subtitles_ext = '.txt'
+download_path = '/path/to/download/dir/'
+db_file = '/path/to/series.sqlite'
