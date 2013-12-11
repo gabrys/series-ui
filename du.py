@@ -83,8 +83,8 @@ col_video_path = 5
 
 def tpb_search_url(title, season, episode):
     full_title = '%s.S%02dE%02d' % (title.replace(' ', '.'), season, episode)
-    print "http://thepiratebay.sx/search/" + urllib2.quote(full_title) + "/0/7/0"
-    return "http://thepiratebay.sx/search/" + urllib2.quote(full_title) + "/0/7/0"
+    print "http://thepiratebay.ac/search/" + urllib2.quote(full_title) + "/0/7/0"
+    return "http://thepiratebay.ac/search/" + urllib2.quote(full_title) + "/0/7/0"
 
 def process_new():
     for series in q_state('new'):
