@@ -7,6 +7,7 @@ import subprocess as sp
 import re
 import sqlite3
 import os.path as op
+import glob
 
 from du_config import *
 
@@ -147,10 +148,13 @@ def process_verified():
 def process_downloaded():
     for series in q_state('downloaded'):
         path = download_path + series[col_video_path]
-        if op.exists(re.sub(re_movie_exts, subtitles_ext, path)):
-            title_tuple = (series[col_title], series[col_season], series[col_episode])
-            update = 'UPDATE series SET state = ? WHERE title = ? AND season = ? AND episode = ?'
-            db().execute(update, ('ready', ) + title_tuple)
+        files = glob.glob(re.sub(re_movie_exts, '.*', path))
+        for file in files:
+            if re.search(re_subtitles_ext, file):
+                title_tuple = (series[col_title], series[col_season], series[col_episode])
+                update = 'UPDATE series SET state = ? WHERE title = ? AND season = ? AND episode = ?'
+                db().execute(update, ('ready', ) + title_tuple)
+                return
 
 def process_old():
     process_downloaded()
