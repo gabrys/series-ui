@@ -11,6 +11,16 @@ import glob
 
 from du_config import *
 
+def glob_escape(path):
+  re_regular_chars = re.compile('[ 0-9a-zA-Z/.-]')
+  ec = []
+  for c in path:
+    if re_regular_chars.match(c):
+      ec.append(c)
+    else:
+      ec.append('[' + c + ']')
+  return ''.join(ec)
+
 class db(object):
     def execute(self, query, args=[]):
         con = sqlite3.connect(db_file, isolation_level=None).cursor()
@@ -148,7 +158,8 @@ def process_verified():
 def process_downloaded():
     for series in q_state('downloaded'):
         path = download_path + series[col_video_path]
-        files = glob.glob(re.sub(re_movie_exts, '.*', path))
+        sub_pattern = glob_escape(re.sub(re_movie_exts, '', path)) + '.*'
+        files = glob.glob(sub_pattern)
         for file in files:
             if re.search(re_subtitles_ext, file):
                 title_tuple = (series[col_title], series[col_season], series[col_episode])
