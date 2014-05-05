@@ -8,6 +8,8 @@ import re
 import sqlite3
 import os.path as op
 import glob
+import gzip
+import StringIO
 
 from du_config import *
 
@@ -32,8 +34,17 @@ class NoResultsError(Exception):
 class TooFewSeedsError(Exception):
     pass
 
+def gunzip(data):
+    buf = StringIO.StringIO()
+    buf.write(data)
+    buf.seek(0)
+    return gzip.GzipFile(fileobj=buf).read()
+
 def tpb_search(url):
     data = urllib2.urlopen(url).read()
+    if 'The Pirate Bay' not in data:
+        # Compressed?
+        data = gunzip(data)
     try:
         data = data.replace("</SCR'+'IPT>", "").replace("</scr'+'ipt>", "")
         td = bs(data).find(id="searchResult").find("td", "vertTh").findNextSibling()
