@@ -57,7 +57,16 @@ def tpb_search(url):
 def add_magnet(magnet):
     sp.call(['transmission-remote'] + transmission_opts + ['-a', magnet])
 
-def download_id(search):
+def series_tuple_from_db(series):
+    return (series[col_title], series[col_season], series[col_episode])
+
+def series_tuple_from_args(title, season, episode):
+    return (title.replace(' ', '.'), season, episode)
+
+def download_id(title_tuple):
+    search = '%s.S%02dE%02d' % title_tuple + \
+        '|%s.%dx%02d' % title_tuple + \
+        '|%s.%02dx%02d' % title_tuple
     out = sp.Popen(['transmission-remote'] + transmission_opts + ['-l'], stdout=sp.PIPE).communicate()[0]
     for line in out.split('\n'):
         if re.search(search.lower(), line.lower()):
@@ -104,14 +113,13 @@ col_magnet = 4
 col_video_path = 5
 
 def tpb_search_url(title, season, episode):
-    full_title = '%s.S%02dE%02d' % (title.replace(' ', '.'), season, episode)
+    full_title = '%s.S%02dE%02d' % series_tuple_from_args(title, season, episode)
     print "http://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
     return "http://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
 
 def process_new():
     for series in q_state('new'):
         title_tuple = (series[col_title], series[col_season], series[col_episode])
-        full_title = '%s.S%02dE%02d' % title_tuple
         try:
             seeds, magnet = tpb_search(tpb_search_url(*title_tuple))
         except NoResultsError:
@@ -124,10 +132,9 @@ def process_new():
 
 def process_queued():
     for series in q_state('queued'):
-        title_tuple = (series[col_title], series[col_season], series[col_episode])
-        full_title = '%s.S%02dE%02d' % title_tuple
         verified = False
-        files = list_files(download_id(full_title))
+        title_tuple = series_tuple_from_db(series)
+        files = list_files(download_id(title_tuple))
         if files:
             for file in files:
                 if re.search(re_movie_exts, file):
@@ -150,9 +157,8 @@ def process_queued():
 def process_fake():
     for series in q_state('fake'):
         title_tuple = (series[col_title], series[col_season], series[col_episode])
-        full_title = '%s.S%02dE%02d' % title_tuple
         try:
-            remove_download(download_id(full_title))
+            remove_download(download_id(title_tuple))
         except NoResultsError:
             pass
         update = 'UPDATE series SET state = ? WHERE title = ? AND season = ? AND episode = ?'
@@ -161,8 +167,7 @@ def process_fake():
 def process_verified():
     for series in q_state('verified'):
         title_tuple = (series[col_title], series[col_season], series[col_episode])
-        full_title = '%s.S%02dE%02d' % title_tuple
-        if percent_done(download_id(full_title)) == 100:
+        if percent_done(download_id(title_tuple)) == 100:
             update = 'UPDATE series SET state = ? WHERE title = ? AND season = ? AND episode = ?'
             db().execute(update, ('downloaded', ) + title_tuple)
 
@@ -197,21 +202,21 @@ def get_tree():
     return data
 
 def remove_new_entry(title, season, episode):
-    args = (title, season, episode, 'new', 'fake', 'queued')
-    full_title = '%s.S%02dE%02d' % (title.replace(' ', '.'), season, episode)
+    title_tuple = series_tuple_from_args(title, season, episode)
     try:
-        remove_download(download_id(full_title))
+        remove_download(download_id(title_tuple))
     except NoResultsError:
         pass
+    args = title_tuple + ('new', 'fake', 'queued')
     db().execute('DELETE FROM series WHERE title = ? AND season = ? AND episode = ? AND state IN (?, ?, ?)', args)
 
 def remove_watched_entry(title, season, episode):
-    full_title = '%s.S%02dE%02d' % (title.replace(' ', '.'), season, episode)
+    title_tuple = series_tuple_from_args(title, season, episode)
     try:
-        remove_download(download_id(full_title), keep_files=True)
+        remove_download(download_id(title_tuple), keep_files=True)
     except NoResultsError:
         pass
-    args = (title, season, episode, 'ready', 'downloaded')
+    args = title_tuple + ('ready', 'downloaded')
     db().execute('DELETE FROM series WHERE title = ? AND season = ? AND episode = ? AND state IN (?, ?)', args)
 
 def add_new_entry(title, season, episode, min_seeds):
