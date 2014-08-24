@@ -118,7 +118,7 @@ $(function() {
         var season = parseInt($('[name="season"]', $form).val());
         var episode = parseInt($('[name="episode"]', $form).val());
         if (season >= 1 && episode >= 1) {
-            location.href = '/add/' + title + '/' + season + '/' + episode + '/1000';
+            location.href = 'add/' + title + '/' + season + '/' + episode + '/1000';
         }
         return false;
     });
@@ -172,7 +172,7 @@ $(function() {
                         $episode_actions.find('a[href="#seeds"]').click(function() {
                                 var new_min_seeds = prompt('Minimalna ilość seedów', min_seeds);
                                 if (new_min_seeds && new_min_seeds != min_seeds) {
-                                        location.href = '/min_seeds/' + title + '/' + season + '/' + episode + '/' + new_min_seeds;
+                                        location.href = 'min_seeds/' + title + '/' + season + '/' + episode + '/' + new_min_seeds;
                                 }
                                 return false;
                         });
@@ -202,7 +202,7 @@ $(function() {
 </head>
 
 <body>
-<a class="download" href="/download">⟳ szukaj oczekiwanych teraz</a>
+<a class="download" href="download">⟳ szukaj oczekiwanych teraz</a>
 <ul id="episodes">
 </ul>
 <form id="new-episode">
