@@ -58,7 +58,7 @@ def tpl():
 <title>Seriale</title>
 <style>
 html { background: #f5f5f5; }
-body { font-family: Verdana; font-size: 13px; width: 800px; margin: 0 auto; background: #fff; box-shadow: 0 -10px 10px #aaa; padding: 0 10px 50px 30px; position: relative; }
+body { font-family: Verdana; font-size: 13px; width: 840px; margin: 0 auto; background: #fff; box-shadow: 0 -10px 10px #aaa; padding: 0 10px 50px 30px; position: relative; }
 h2 { font-family: Ubuntu; margin-top: 30px; }
 a { text-decoration: none; color: #00f; }
 a:hover { text-decoration: underline; }
@@ -82,7 +82,7 @@ li.new { opacity: 0.3; }
 ul, li { list-style: none; padding: 0; margin: 0; }
 li li { margin: 10px 0 10px 20px; list-style: square; }
 #episodes { overflow: hidden; }
-#episodes > li { float: left; width: 400px; list-style: none; margin: 0; }
+#episodes > li { float: left; width: 420px; list-style: none; margin: 0; }
 #episodes > li:nth-child(2n+1) { clear: left; }
 </style>
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
