@@ -65,6 +65,7 @@ def series_tuple_from_args(title, season, episode):
 
 def download_id(title_tuple):
     search = '%s.S%02dE%02d' % title_tuple + \
+        '|%s\s+S%02dE%02d' % title_tuple + \
         '|%s.%dx%02d' % title_tuple + \
         '|%s.%02dx%02d' % title_tuple
     out = sp.Popen(['transmission-remote'] + transmission_opts + ['-l'], stdout=sp.PIPE).communicate()[0]
