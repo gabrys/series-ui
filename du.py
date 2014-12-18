@@ -41,18 +41,15 @@ def gunzip(data):
     return gzip.GzipFile(fileobj=buf).read()
 
 def tpb_search(url):
-    data = urllib2.urlopen(url).read()
-    if 'The Pirate Bay' not in data:
-        # Compressed?
-        data = gunzip(data)
+    search_page = bs(urllib2.urlopen(url).read())
     try:
-        data = data.replace("</SCR'+'IPT>", "").replace("</scr'+'ipt>", "")
-        td = bs(data).find(id="searchResult").find("td", "vertTh").findNextSibling()
-        seeds = int(td.findNextSibling().string)
+        seeds = int(search_page.find("td", "seeders-row").text)
+        magnet = search_page.find("a", {"title": "MAGNET LINK"})['href']
+
     except AttributeError:
         raise NoResultsError()
 
-    return seeds, '' + td.find("img", {"alt": "Magnet link"}).findParent("a")['href']
+    return seeds, magnet
 
 def add_magnet(magnet):
     sp.call(['transmission-remote'] + transmission_opts + ['-a', magnet])
@@ -115,8 +112,8 @@ col_video_path = 5
 
 def tpb_search_url(title, season, episode):
     full_title = '%s.S%02dE%02d' % series_tuple_from_args(title, season, episode)
-    print "http://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
-    return "http://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
+    print "https://oldpiratebay.org/search.php?q=" + urllib2.quote(full_title) + "&Torrent_sort=seeders.desc"
+    return "https://oldpiratebay.org/search.php?q=" + urllib2.quote(full_title) + "&Torrent_sort=seeders.desc"
 
 def process_new():
     for series in q_state('new'):
