@@ -43,6 +43,11 @@ def gunzip(data):
 def kickass_search(url):
     search_page = bs(gunzip(urllib2.urlopen(url).read()))
     try:
+        # Fight against non-exact search results
+        result_header = search_page.find('h2').text
+        if result_header.startswith("Showing results for"):
+            raise NoResultsError()
+
         row = search_page.find("tr", "odd")
         seeds = int(row.find("td", "green center").text)
         magnet = row.find("a", "imagnet icon16")["href"]
