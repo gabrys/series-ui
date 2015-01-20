@@ -40,11 +40,12 @@ def gunzip(data):
     buf.seek(0)
     return gzip.GzipFile(fileobj=buf).read()
 
-def tpb_search(url):
-    search_page = bs(urllib2.urlopen(url).read())
+def kickass_search(url):
+    search_page = bs(gunzip(urllib2.urlopen(url).read()))
     try:
-        seeds = int(search_page.find("td", "seeders-row").text)
-        magnet = search_page.find("a", {"title": "MAGNET LINK"})['href']
+        row = search_page.find("tr", "odd")
+        seeds = int(row.find("td", "green center").text)
+        magnet = row.find("a", "imagnet icon16")["href"]
 
     except AttributeError:
         raise NoResultsError()
@@ -110,16 +111,16 @@ col_min_seeds = 3
 col_magnet = 4
 col_video_path = 5
 
-def tpb_search_url(title, season, episode):
+def kickass_search_url(title, season, episode):
     full_title = '%s.S%02dE%02d' % series_tuple_from_args(title, season, episode)
-    print "https://oldpiratebay.org/search.php?q=" + urllib2.quote(full_title) + "&Torrent_sort=seeders.desc"
-    return "https://oldpiratebay.org/search.php?q=" + urllib2.quote(full_title) + "&Torrent_sort=seeders.desc"
+    print "https://kickass.so/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
+    return "https://kickass.so/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
 
 def process_new():
     for series in q_state('new'):
         title_tuple = (series[col_title], series[col_season], series[col_episode])
         try:
-            seeds, magnet = tpb_search(tpb_search_url(*title_tuple))
+            seeds, magnet = kickass_search(kickass_search_url(*title_tuple))
         except NoResultsError:
             continue
         # if magnet is set, it means it's fake
