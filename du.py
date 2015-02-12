@@ -118,8 +118,8 @@ col_video_path = 5
 
 def kickass_search_url(title, season, episode):
     full_title = '%s.S%02dE%02d' % series_tuple_from_args(title, season, episode)
-    print "https://kickass.so/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
-    return "https://kickass.so/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
+    print "https://kickass.to/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
+    return "https://kickass.to/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
 
 def process_new():
     for series in q_state('new'):
