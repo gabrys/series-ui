@@ -32,7 +32,7 @@ class remove:
 
 class search:
     def GET(self, title, season, episode):
-        raise web.seeother(du.tpb_search_url(title, int(season), int(episode)))
+        raise web.seeother(du.kickass_search_url(title, int(season), int(episode)))
 
 class add:
     def GET(self, title, season, episode, min_seeds):
