@@ -41,7 +41,10 @@ def gunzip(data):
     return gzip.GzipFile(fileobj=buf).read()
 
 def kickass_search(url):
-    search_page = bs(gunzip(urllib2.urlopen(url).read()))
+    try:
+        search_page = bs(gunzip(urllib2.urlopen(url).read()))
+    except urllib2.HTTPError:
+        raise NoResultsError()
     try:
         # Fight against non-exact search results
         result_header = search_page.find('h2').text
