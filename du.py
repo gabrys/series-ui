@@ -40,25 +40,19 @@ def gunzip(data):
     buf.seek(0)
     return gzip.GzipFile(fileobj=buf).read()
 
-def kickass_search(url):
+def tpb_search(url):
+    data = urllib2.urlopen(url).read()
+    if 'The Pirate Bay' not in data:
+        # Compressed?
+        data = gunzip(data)
     try:
-        search_page = bs(gunzip(urllib2.urlopen(url).read()))
-    except urllib2.HTTPError:
-        raise NoResultsError()
-    try:
-        # Fight against non-exact search results
-        result_header = search_page.find('h2').text
-        if result_header.startswith("Showing results for"):
-            raise NoResultsError()
-
-        row = search_page.find("tr", "odd")
-        seeds = int(row.find("td", "green center").text)
-        magnet = row.find("a", "imagnet icon16")["href"]
-
+        data = data.replace("</SCR'+'IPT>", "").replace("</scr'+'ipt>", "")
+        td = bs(data).find(id="searchResult").find("td", "vertTh").findNextSibling()
+        seeds = int(td.findNextSibling().string)
     except AttributeError:
         raise NoResultsError()
 
-    return seeds, magnet
+    return seeds, '' + td.find("img", {"alt": "Magnet link"}).findParent("a")['href']
 
 def add_magnet(magnet):
     sp.call(['transmission-remote'] + transmission_opts + ['-a', magnet])
@@ -119,16 +113,16 @@ col_min_seeds = 3
 col_magnet = 4
 col_video_path = 5
 
-def kickass_search_url(title, season, episode):
+def tpb_search_url(title, season, episode):
     full_title = '%s.S%02dE%02d' % series_tuple_from_args(title, season, episode)
-    print "https://kickass.to/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
-    return "https://kickass.to/usearch/" + urllib2.quote(full_title) + "/?field=seeders&sorder=desc"
+    print "http://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
+    return "http://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
 
 def process_new():
     for series in q_state('new'):
         title_tuple = (series[col_title], series[col_season], series[col_episode])
         try:
-            seeds, magnet = kickass_search(kickass_search_url(*title_tuple))
+            seeds, magnet = tpb_search(tpb_search_url(*title_tuple))
         except NoResultsError:
             continue
         # if magnet is set, it means it's fake
