@@ -2,6 +2,7 @@
 
 transmission_opts = ['-n', 'user:password']
 re_movie_exts = '\.(avi|mp4|mkv|flv)$'
+re_movie_blacklist = 'sample'
 subtitles_ext = '\.(txt|sub)'
 download_path = '/path/to/download/dir/'
 db_file = '/path/to/series.sqlite'

@@ -139,7 +139,7 @@ def process_queued():
         files = list_files(download_id(title_tuple))
         if files:
             for file in files:
-                if re.search(re_movie_exts, file):
+                if re.search(re_movie_exts, file) and not re.search(re_movie_blacklist, file):
                     verified = True
                     video_path = file
                     break
