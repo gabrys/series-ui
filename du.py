@@ -41,11 +41,7 @@ def gunzip(data):
     return gzip.GzipFile(fileobj=buf).read()
 
 def tpb_search(url):
-    req = urllib2.Request(url, headers={ 'User-Agent': user_agent })
-    data = urllib2.urlopen(req).read()
-    if 'The Pirate Bay' not in data:
-        # Compressed?
-        data = gunzip(data)
+    data = sp.check_output(['curl', '-A', user_agent, url], stderr=sp.PIPE)
     try:
         data = data.replace("</SCR'+'IPT>", "").replace("</scr'+'ipt>", "")
         td = bs(data).find(id="searchResult").find("td", "vertTh").findNextSibling()
