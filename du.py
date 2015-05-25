@@ -112,8 +112,8 @@ col_video_path = 5
 
 def tpb_search_url(title, season, episode):
     full_title = '%s.S%02dE%02d' % series_tuple_from_args(title, season, episode)
-    print "https://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
-    return "https://thepiratebay.se/search/" + urllib2.quote(full_title) + "/0/7/0"
+    print "https://thepiratebay.mn/search/" + urllib2.quote(full_title) + "/0/7/0"
+    return "https://thepiratebay.mn/search/" + urllib2.quote(full_title) + "/0/7/0"
 
 def process_new():
     for series in q_state('new'):
